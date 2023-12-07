@@ -21,6 +21,12 @@ class SolarExperiment:
     def __init__(self) -> None:
         self.clear()
 
+    def get_resistance(self, port):
+        device = ArduinoVISADevice(port)
+        U_tot = device.get_input_voltage(channel=1) * 3
+        U2 = device.get_input_voltage(channel=2)
+        U_r = U_tot - U2
+
     def scan(self, port, start=0, stop=3.3, sample_size=5) -> None:
         # connect to controller and convert inputs
         self.device = ArduinoVISADevice(port)
@@ -64,6 +70,20 @@ class SolarExperiment:
             # self.pv_powers.append(pv_power)
 
         self.device.close_device()
+
+    def get_identification(self, port):
+        """Get the identification of the device.
+
+        Returns:
+            string: the identification string
+        """
+        device = ArduinoVISADevice(port)
+        return device.get_indentification()
+
+    def close(self, port):
+        """Close device"""
+        device = ArduinoVISADevice(port)
+        device.close_device()
 
     def clear(self):
         self.pv_voltages = []
