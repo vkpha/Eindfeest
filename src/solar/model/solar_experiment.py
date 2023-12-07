@@ -15,6 +15,7 @@ measure channel 2 and
 from solar.controller.arduino_device import ArduinoVISADevice, list_devices
 import numpy as np
 from rich.progress import track
+import threading
 
 
 class SolarExperiment:
@@ -26,6 +27,9 @@ class SolarExperiment:
         U_tot = device.get_input_voltage(channel=1) * 3
         U2 = device.get_input_voltage(channel=2)
         U_r = U_tot - U2
+
+    def start_scan(self):
+        pass
 
     def scan(self, port, start=0, stop=3.3, sample_size=1) -> None:
         # connect to controller and convert inputs
