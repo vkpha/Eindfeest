@@ -27,7 +27,7 @@ class SolarExperiment:
         U2 = device.get_input_voltage(channel=2)
         U_r = U_tot - U2
 
-    def scan(self, port, start=0, stop=3.3, sample_size=5) -> None:
+    def scan(self, port, start=0, stop=3.3, sample_size=1) -> None:
         # connect to controller and convert inputs
         self.device = ArduinoVISADevice(port)
         start = self.device.analog_to_digital(start)
@@ -65,7 +65,7 @@ class SolarExperiment:
             )
 
             self.currents.append(np.mean(I_volt) / 4.7)
-            self.currents_err((np.std(I_volt) / np.sqrt(sample_size)) / 4.7)
+            self.currents_err.append((np.std(I_volt) / np.sqrt(sample_size)) / 4.7)
 
             # self.pv_powers.append(pv_power)
 
