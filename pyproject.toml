@@ -11,6 +11,7 @@ pyvisa-py = "^0.7.1"
 numpy = "^1.26.2"
 pyside6 = "^6.6.1"
 pyqtgraph = "^0.13.3"
+matplotlib = "^3.8.2"
 
 
 [tool.poetry.group.dev.dependencies]
