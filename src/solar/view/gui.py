@@ -133,9 +133,8 @@ class UserInterface(QtWidgets.QMainWindow):
         self.plot_widget.plot(x, y, symbol="o", symbolSize=5, pen=None)
         self.plot_widget.setLabel("left", "I (A)")
         self.plot_widget.setLabel("bottom", "U (V)")
-        if len(x) == len(x_err) and len(y) == len(y_err):
-            error_bars = pg.ErrorBarItem(x=x, y=y, width=x_err, height=y_err)
-            self.plot_widget.addItem(error_bars)
+        error_bars = pg.ErrorBarItem(x=x, y=y, width=x_err, height=y_err)
+        self.plot_widget.addItem(error_bars)
 
     @Slot()
     def save_data(self):
