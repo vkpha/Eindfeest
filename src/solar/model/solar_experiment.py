@@ -13,6 +13,7 @@ measure channel 2 and
     >> Use this to the MOSFET resistance or PV power
 """
 from solar.controller.arduino_device import ArduinoVISADevice, list_devices
+import numpy as np
 
 
 class SolarExperiment:
@@ -25,13 +26,41 @@ class SolarExperiment:
         start = self.device.analog_to_digital(start)
         stop = self.device.analog_to_digital(stop)
 
+        # Clear old results
+        self.clear()
+
         # scan over the requested range
         for value in range(start, stop + 1):
             self.device.set_output_value(value)
-            # Remember to multiply with three for the total voltage
-            pv_volt = self.device.get_input_voltage(channel=1) * 3
-            I_volt = self.device.get_input_voltage(channel=0)
-            current = I_volt / 4.7
+            pv_volt = []
+            I_volt = []
+            fet_voltage = []
+            current = []
+            pv_power = []
+            for _ in range(sample_size):
+                # Remember to multiply with three for the total voltage
+                pv_volt.append(self.device.get_input_voltage(channel=1) * 3)
+                I_volt.append(self.device.get_input_voltage(channel=0))
+
+            # Add results
+            self.pv_voltages.append(np.mean(pv_volt))
+            self.pv_voltages_err.append(np.std(pv_volt) / np.sqrt(sample_size))
+
+            self.I_voltages.append(np.mean(I_volt))
+            self.I_voltages_err.append(np.std(I_volt) / np.sqrt(sample_size))
+
+            self.fet_voltages.append(np.mean(pv_volt) - np.mean(I_volt))
+            self.fet_voltages_err.append(
+                (
+                    (np.std(pv_volt) / np.sqrt(sample_size)) ** 2
+                    + (np.std(I_volt) / np.sqrt(sample_size)) ** 2
+                )
+            )
+
+            self.currents.append(np.mean(I_volt) / 4.7)
+            self.currents_err((np.std(I_volt) / np.sqrt(sample_size)) / 4.7)
+
+            # self.pv_powers.append(pv_power)
 
             pass
 
@@ -39,7 +68,12 @@ class SolarExperiment:
 
     def clear(self):
         self.pv_voltages = []
+        self.pv_voltages_err = []
         self.currents = []
+        self.currents_err = []
         self.fet_voltages = []
+        self.fet_voltages_err = []
         self.pv_powers = []
-        self.I_voltages = []
+        self.pv_powers_err = []
+        # self.I_voltages = []
+        # self.I_voltages_err = []
