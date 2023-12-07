@@ -87,16 +87,16 @@ class UserInterface(QtWidgets.QMainWindow):
         hbox.addLayout(button_box)
 
         # buttons to functions
-        start_button.clicked.connect(self.start_scan)
+        start_button.clicked.connect(self.simple_plot)
         save_button.clicked.connect(self.save_data)
 
         self.experiment = SolarExperiment()
 
         # Plot timer
-        self.plot_timer = QtCore.QTimer()
+        # self.plot_timer = QtCore.QTimer()
         # Roep iedere 100 ms de plotfunctie aan
-        self.plot_timer.timeout.connect(self.plot)
-        self.plot_timer.start(100)
+        # self.plot_timer.timeout.connect(self.plot)
+        # self.plot_timer.start(100)
 
         # create menubar
         self._createActions()
@@ -126,6 +126,25 @@ class UserInterface(QtWidgets.QMainWindow):
     def plot(self):
         """Plot the results"""
         self.plot_widget.clear()
+        x = np.array(self.experiment.pv_voltages)
+        y = np.array(self.experiment.currents)
+        x_err = np.array(self.experiment.pv_voltages_err)
+        y_err = np.array(self.experiment.currents_err)
+        self.plot_widget.plot(x, y, symbol="o", symbolSize=5, pen=None)
+        self.plot_widget.setLabel("left", "I (A)")
+        self.plot_widget.setLabel("bottom", "U (V)")
+        error_bars = pg.ErrorBarItem(x=x, y=y, width=x_err, height=y_err)
+        self.plot_widget.addItem(error_bars)
+
+    @Slot()
+    def simple_plot(self):
+        self.experiment = SolarExperiment()
+        self.experiment.scan(
+            self.port.currentText(),
+            self.measurements.value(),
+            self.start_voltage.value(),
+            self.stop_voltage.value(),
+        )
         x = np.array(self.experiment.pv_voltages)
         y = np.array(self.experiment.currents)
         x_err = np.array(self.experiment.pv_voltages_err)
