@@ -13,13 +13,35 @@ measure channel 2 and
     >> Use this to the MOSFET resistance or PV power
 """
 
+from controller.arduino_device import ArduinoVISADevice, list_devices
+
 
 class SolarExperiment:
     def __init__(self) -> None:
         self.clear()
 
+    def get_resistance(self, port):
+        device = ArduinoVISADevice(port)
+        U_tot = device.get_input_voltage(channel=1) * 3
+        U2 = device.get_input_voltage(channel=2)
+        U_r = U_tot - U2
+
     def scan(self, start=0, stop=3.3):
         pass
+
+    def get_identification(self, port):
+        """Get the identification of the device.
+
+        Returns:
+            string: the identification string
+        """
+        device = ArduinoVISADevice(port)
+        return device.get_indentification()
+
+    def close(self, port):
+        """Close device"""
+        device = ArduinoVISADevice(port)
+        device.close_device()
 
     def clear(self):
         self.pv_voltages = []
