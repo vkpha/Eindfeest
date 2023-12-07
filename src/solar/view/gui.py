@@ -87,16 +87,16 @@ class UserInterface(QtWidgets.QMainWindow):
         hbox.addLayout(button_box)
 
         # buttons to functions
-        start_button.clicked.connect(self.simple_plot)
+        start_button.clicked.connect(self.start_scan)
         save_button.clicked.connect(self.save_data)
 
         self.experiment = SolarExperiment()
 
         # Plot timer
-        # self.plot_timer = QtCore.QTimer()
+        self.plot_timer = QtCore.QTimer()
         # Roep iedere 100 ms de plotfunctie aan
-        # self.plot_timer.timeout.connect(self.plot)
-        # self.plot_timer.start(100)
+        self.plot_timer.timeout.connect(self.plot)
+        self.plot_timer.start(100)
 
         # create menubar
         self._createActions()
@@ -110,9 +110,9 @@ class UserInterface(QtWidgets.QMainWindow):
             self.experiment = SolarExperiment()
             self.experiment.scan(
                 self.port.currentText(),
-                self.measurements.value(),
                 self.start_voltage.value(),
                 self.stop_voltage.value(),
+                self.measurements.value(),
             )
             self.statusbar.showMessage("Done", 3000)
         except Exception as e:
@@ -141,10 +141,11 @@ class UserInterface(QtWidgets.QMainWindow):
         self.experiment = SolarExperiment()
         self.experiment.scan(
             self.port.currentText(),
-            self.measurements.value(),
             self.start_voltage.value(),
             self.stop_voltage.value(),
+            self.measurements.value(),
         )
+        self.plot_widget.clear()
         x = np.array(self.experiment.pv_voltages)
         y = np.array(self.experiment.currents)
         x_err = np.array(self.experiment.pv_voltages_err)

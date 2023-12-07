@@ -75,6 +75,13 @@ class SolarExperiment:
 
         self.device.close_device()
 
+    def start_scan(self, port, start, stop, N):
+        """Start a new thread to execute a scan."""
+        self._scan_thread = threading.Thread(
+            target=self.scan, args=(port, start, stop, N)
+        )
+        self._scan_thread.start()
+
     def get_identification(self, port):
         """Get the identification of the device.
 
