@@ -26,8 +26,23 @@ class SolarExperiment:
         U2 = device.get_input_voltage(channel=2)
         U_r = U_tot - U2
 
-    def scan(self, start=0, stop=3.3):
-        pass
+    def scan(self, port, start=0, stop=3.3, sample_size=5) -> dict:
+        # connect to controller and convert inputs
+        self.device = ArduinoVISADevice(port)
+        start = self.device.analog_to_digital(start)
+        stop = self.device.analog_to_digital(stop)
+
+        # scan over the requested range
+        for value in range(start, stop + 1):
+            self.device.set_output_value(value)
+            # Remember to multiply with three for the total voltage
+            pv_volt = self.device.get_input_voltage(channel=1) * 3
+            I_volt = self.device.get_input_voltage(channel=0)
+            current = I_volt / 4.7
+
+            pass
+
+        self.device.close_device()
 
     def get_identification(self, port):
         """Get the identification of the device.
@@ -45,3 +60,7 @@ class SolarExperiment:
 
     def clear(self):
         self.pv_voltages = []
+        self.currents = []
+        self.fet_voltages = []
+        self.pv_powers = []
+        self.I_voltages = []
