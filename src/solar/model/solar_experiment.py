@@ -14,13 +14,14 @@ measure channel 2 and
 """
 from solar.controller.arduino_device import ArduinoVISADevice, list_devices
 import numpy as np
+from rich.progress import track
 
 
 class SolarExperiment:
     def __init__(self) -> None:
         self.clear()
 
-    def scan(self, port, start=0, stop=3.3, sample_size=5) -> dict:
+    def scan(self, port, start=0, stop=3.3, sample_size=5) -> None:
         # connect to controller and convert inputs
         self.device = ArduinoVISADevice(port)
         start = self.device.analog_to_digital(start)
@@ -30,7 +31,7 @@ class SolarExperiment:
         self.clear()
 
         # scan over the requested range
-        for value in range(start, stop + 1):
+        for value in track(range(start, stop + 1)):
             self.device.set_output_value(value)
             pv_volt = []
             I_volt = []
@@ -40,7 +41,7 @@ class SolarExperiment:
             for _ in range(sample_size):
                 # Remember to multiply with three for the total voltage
                 pv_volt.append(self.device.get_input_voltage(channel=1) * 3)
-                I_volt.append(self.device.get_input_voltage(channel=0))
+                I_volt.append(self.device.get_input_voltage(channel=2))
 
             # Add results
             self.pv_voltages.append(np.mean(pv_volt))
@@ -61,8 +62,6 @@ class SolarExperiment:
             self.currents_err((np.std(I_volt) / np.sqrt(sample_size)) / 4.7)
 
             # self.pv_powers.append(pv_power)
-
-            pass
 
         self.device.close_device()
 
