@@ -93,3 +93,11 @@ class ArduinoVISADevice:
 def list_devices():
     rm = pyvisa.ResourceManager("@py")
     return rm.list_resources()
+
+
+def main():
+    print(list_devices())
+
+
+if __name__ == "__main__":
+    main()
