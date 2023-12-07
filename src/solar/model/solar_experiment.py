@@ -22,6 +22,9 @@ class SolarExperiment:
     def __init__(self) -> None:
         self.clear()
 
+    def get_connected_devices(self):
+        return list_devices()
+
     def get_resistance(self, port):
         device = ArduinoVISADevice(port)
         U_tot = device.get_input_voltage(channel=1) * 3
