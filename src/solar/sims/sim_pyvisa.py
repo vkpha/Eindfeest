@@ -152,5 +152,5 @@ class SimulatedDevice:
             self.idxs[self.setting][ch_idx] += 1
 
         # simulate a slow response
-        time.sleep(0.001)
+        # time.sleep(0.0000000005)
         return value
