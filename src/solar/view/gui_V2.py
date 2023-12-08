@@ -118,7 +118,7 @@ class UserInterface(QtWidgets.QMainWindow):
                     port=self.device_selection.currentText(),
                     start=self.start_input.value(),
                     stop=self.stop_input.value(),
-                    sample_size=self.sample_input.value(),
+                    N=self.sample_input.value(),
                 )
 
             except Exception as err:
@@ -139,17 +139,17 @@ class UserInterface(QtWidgets.QMainWindow):
 
             # Plot new result
             self.plot_window.plot(
-                self.experiment.led_voltages,
                 self.experiment.currents,
+                self.experiment.pv_voltages,
                 symbol="o",
                 symbolSize=5,
                 pen=None,
             )
             error_items = pg.ErrorBarItem(
-                x=np.array(self.experiment.led_voltages),
-                y=np.array(self.experiment.currents),
-                width=2 * np.array(self.experiment.led_voltages_errors),
-                height=2 * np.array(self.experiment.currents_errors),
+                x=np.array(self.experiment.currents),
+                y=np.array(self.experiment.pv_voltages),
+                width=2 * np.array(self.experiment.currents),
+                height=2 * np.array(self.experiment.pv_voltages_err),
             )
 
             self.plot_window.addItem(error_items)

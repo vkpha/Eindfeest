@@ -22,6 +22,9 @@ class SolarExperiment:
     def __init__(self) -> None:
         self.clear()
 
+        # create a threading event to keep track of trackin status
+        self.is_scanning = threading.Event()
+
     def get_connected_devices(self):
         return list_devices()
 
@@ -31,14 +34,14 @@ class SolarExperiment:
         U2 = device.get_input_voltage(channel=2)
         U_r = U_tot - U2
 
-    def start_scan(self):
-        pass
-
-    def scan(self, port, start=0, stop=3.3, sample_size=1) -> None:
+    def scan(self, port, start, stop, sample_size) -> None:
         # connect to controller and convert inputs
         self.device = ArduinoVISADevice(port)
         start = self.device.analog_to_digital(start)
         stop = self.device.analog_to_digital(stop)
+
+        # Update scanning Event
+        self.is_scanning.set()
 
         # Clear old results
         self.clear()
@@ -77,9 +80,17 @@ class SolarExperiment:
             # self.pv_powers.append(pv_power)
 
         self.device.close_device()
+        self.is_scanning.clear()
 
     def start_scan(self, port, start, stop, N):
-        """Start a new thread to execute a scan."""
+        """Function that runs the scan method as a seperate thread
+
+        Args:
+            port (string): port of the device controlling the experiment
+            start (float, optional): analog voltage at which the experiment starts.
+            stop (float, optional): analog voltage at which the experiment stops.
+            N (int, optional): number of samples to take at each volatage level.
+        """
         self._scan_thread = threading.Thread(
             target=self.scan, args=(port, start, stop, N)
         )
