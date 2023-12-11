@@ -45,7 +45,7 @@ class SolarExperiment:
 
         # Clear old results
         self.clear()
-
+        
         # scan over the requested range
         for value in track(range(start, stop + 1)):
             self.device.set_output_value(value)
@@ -71,11 +71,19 @@ class SolarExperiment:
                 (
                     (np.std(pv_volt) / np.sqrt(sample_size)) ** 2
                     + (np.std(I_volt) / np.sqrt(sample_size)) ** 2
-                )
+                )**0.5
             )
 
             self.currents.append(np.mean(I_volt) / 4.7)
             self.currents_err.append((np.std(I_volt) / np.sqrt(sample_size)) / 4.7)
+
+            self.pv_powers.append(self.pv_voltages[-1] * self.currents[-1])
+            self.pv_powers_err.append(((self.currents[-1]*self.pv_voltages_err[-1])**2+(self.pv_voltages[-1]*self.currents_err[-1])**2)**0.5)
+            if self.pv_powers[-1] > self.p_max:
+                self.p_max = self.pv_powers[-1]
+            print(self.currents[-1])
+            self.fet_R.append(self.fet_voltages[-1] / self.currents[-1])
+            self.fet_R_err.append(((self.fet_voltages_err[-1]/self.currents[-1])**2+(self.fet_voltages[-1] * np.log(self.currents[-1]) * self.currents_err[-1])**2)**0.5)
 
             # self.pv_powers.append(pv_power)
 
@@ -117,7 +125,10 @@ class SolarExperiment:
         self.currents_err = []
         self.fet_voltages = []
         self.fet_voltages_err = []
-        # self.pv_powers = []
-        # self.pv_powers_err = []
+        self.pv_powers = []
+        self.pv_powers_err = []
         self.I_voltages = []
         self.I_voltages_err = []
+        self.fet_R = []
+        self.fet_R_err = []
+        self.p_max = 0

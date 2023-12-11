@@ -95,7 +95,7 @@ class UserInterface(QtWidgets.QMainWindow):
         # Plot timer
         self.plot_timer = QtCore.QTimer()
         # Roep iedere 100 ms de plotfunctie aan
-        self.plot_timer.timeout.connect(self.plot)
+        self.plot_timer.timeout.connect(self.pr_plot)
         self.plot_timer.start(100)
 
         # create menubar
@@ -177,6 +177,29 @@ class UserInterface(QtWidgets.QMainWindow):
                     self.experiment.currents_err,
                 ):
                     writer.writerow(list(line))
+    
+    @Slot()
+    def power(self):
+        P_max = 0
+        for u, i in zip(self.experiment.pv_voltages, self.experiment.currents):
+            P = u*i
+            if P > P_max:
+                P_max = P
+        return P_max
+
+    @Slot()
+    def pr_plot(self):
+        """Plot the results"""
+        self.plot_widget.clear()
+        x = np.array(self.experiment.fet_R)
+        y = np.array(self.experiment.pv_powers)
+        x_err = np.array(self.experiment.fet_R_err)
+        y_err = np.array(self.experiment.pv_powers_err)
+        self.plot_widget.plot(x, y, symbol="o", symbolSize=5, pen=None)
+        self.plot_widget.setLabel("left", "P (W)")
+        self.plot_widget.setLabel("bottom", "R (Ohm)")
+        error_bars = pg.ErrorBarItem(x=x, y=y, width=2*x_err, height=2*y_err)
+        self.plot_widget.addItem(error_bars)
 
     def _createActions(self):
         """Connect menubar to actions"""
