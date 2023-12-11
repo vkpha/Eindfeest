@@ -34,7 +34,7 @@ class UserInterface(QtWidgets.QMainWindow):
         graph_box = QtWidgets.QVBoxLayout()
         graph_label = QtWidgets.QLabel("Graph")
         self.graph = QtWidgets.QComboBox(self)
-        self.graph.addItems(["UI-characteristic", "PR-Characteristic"])
+        self.graph.addItems(["UI-characteristic", "PR-characteristic"])
         #graph_box.addWidget(graph_label)
         graph_box.addWidget(self.graph)
         hbox.addLayout(graph_box)
@@ -207,15 +207,10 @@ class UserInterface(QtWidgets.QMainWindow):
                     self.experiment.currents_err,
                 ):
                     writer.writerow(list(line))
-    
+
     @Slot()
     def power(self):
-        P_max = 0
-        for u, i in zip(self.experiment.pv_voltages, self.experiment.currents):
-            P = u*i
-            if P > P_max:
-                P_max = P
-        return P_max
+        self.statusbar.showMessage(f"Current max power: {self.experiment.p_max}")
 
     @Slot()
     def pr_plot(self):
