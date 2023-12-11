@@ -139,15 +139,15 @@ class UserInterface(QtWidgets.QMainWindow):
 
             # Plot new result
             self.plot_window.plot(
-                self.experiment.currents,
                 self.experiment.pv_voltages,
+                self.experiment.currents,
                 symbol="o",
                 symbolSize=5,
                 pen=None,
             )
             error_items = pg.ErrorBarItem(
-                x=np.array(self.experiment.currents),
-                y=np.array(self.experiment.pv_voltages),
+                y=np.array(self.experiment.currents),
+                x=np.array(self.experiment.pv_voltages),
                 width=2 * np.array(self.experiment.currents),
                 height=2 * np.array(self.experiment.pv_voltages_err),
             )
