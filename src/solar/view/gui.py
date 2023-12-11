@@ -29,6 +29,17 @@ class UserInterface(QtWidgets.QMainWindow):
         self.setCentralWidget(central_widget)
         vbox = QtWidgets.QVBoxLayout(central_widget)
 
+        hbox = QtWidgets.QHBoxLayout()
+        vbox.addLayout(hbox)
+        graph_box = QtWidgets.QVBoxLayout()
+        graph_label = QtWidgets.QLabel("Graph")
+        self.graph = QtWidgets.QComboBox(self)
+        self.graph.addItems(["UI-characteristic", "PR-Characteristic"])
+        #graph_box.addWidget(graph_label)
+        graph_box.addWidget(self.graph)
+        hbox.addLayout(graph_box)
+
+
         # add plot widget
         self.plot_widget = pg.PlotWidget()
         vbox.addWidget(self.plot_widget)
@@ -89,19 +100,38 @@ class UserInterface(QtWidgets.QMainWindow):
         # buttons to functions
         start_button.clicked.connect(self.run)
         save_button.clicked.connect(self.save_data)
+        self.graph.currentIndexChanged.connect(self.change_plot)
 
         self.experiment = SolarExperiment()
 
         # Plot timer
         self.plot_timer = QtCore.QTimer()
         # Roep iedere 100 ms de plotfunctie aan
-        self.plot_timer.timeout.connect(self.pr_plot)
-        self.plot_timer.start(100)
+        if self.graph.currentIndex() == 0:
+            self.plot_timer.timeout.connect(self.plot)
+            self.plot_timer.start(100)
+        else:
+            self.plot_timer.timeout.connect(self.pr_plot)
+            self.plot_timer.start(100)
+
+        self.change_plot()
 
         # create menubar
         self._createActions()
         self._createMenubar()
         self._createStatusBar()
+
+    @Slot()
+    def change_plot(self):
+        # Plot timer
+        self.plot_timer = QtCore.QTimer()
+        # Roep iedere 100 ms de plotfunctie aan
+        if self.graph.currentIndex() == 0:
+            self.plot_timer.timeout.connect(self.plot)
+            self.plot_timer.start(100)
+        else:
+            self.plot_timer.timeout.connect(self.pr_plot)
+            self.plot_timer.start(100)
 
     @Slot()
     def run(self):
