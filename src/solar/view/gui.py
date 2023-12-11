@@ -51,7 +51,7 @@ class UserInterface(QtWidgets.QMainWindow):
         # add start value box in hbox
         start_box = QtWidgets.QVBoxLayout()
         self.start_voltage = QtWidgets.QDoubleSpinBox()
-        self.start_voltage.setValue(0)
+        self.start_voltage.setValue(1.5)
         self.start_voltage.setRange(0, 3.3)
         self.start_voltage.setSingleStep(0.01)
         start_label = QtWidgets.QLabel("Start voltage")
@@ -62,7 +62,7 @@ class UserInterface(QtWidgets.QMainWindow):
         # add stop value box in hbox
         stop_box = QtWidgets.QVBoxLayout()
         self.stop_voltage = QtWidgets.QDoubleSpinBox()
-        self.stop_voltage.setValue(3.3)
+        self.stop_voltage.setValue(2.2)
         self.stop_voltage.setRange(0, 3.3)
         self.stop_voltage.setSingleStep(0.01)
         stop_label = QtWidgets.QLabel("Stop voltage")
