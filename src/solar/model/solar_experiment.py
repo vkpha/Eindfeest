@@ -81,9 +81,8 @@ class SolarExperiment:
             self.pv_powers_err.append(((self.currents[-1]*self.pv_voltages_err[-1])**2+(self.pv_voltages[-1]*self.currents_err[-1])**2)**0.5)
             if self.pv_powers[-1] > self.p_max:
                 self.p_max = self.pv_powers[-1]
-            print(self.currents[-1])
-            self.fet_R.append(self.fet_voltages[-1] / self.currents[-1])
-            self.fet_R_err.append(((self.fet_voltages_err[-1]/self.currents[-1])**2+(self.fet_voltages[-1] * np.log(self.currents[-1]) * self.currents_err[-1])**2)**0.5)
+            self.fet_R.append(self.fet_voltages[-1] / (self.currents[-1]))
+            self.fet_R_err.append(((self.fet_voltages_err[-1]/(self.currents[-1]))**2+(self.fet_voltages[-1] * np.log(self.currents[-1]+0.000001) * self.currents_err[-1])**2)**0.5)
 
             # self.pv_powers.append(pv_power)
 
