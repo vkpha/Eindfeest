@@ -1,7 +1,7 @@
 from solar.model.solar_experiment import SolarExperiment, list_devices
 import sys
 from PySide6 import QtWidgets, QtCore
-from PySide6.QtCore import Slot
+from PySide6.QtCore import Slot, QTimer
 import pyqtgraph as pg
 import numpy as np
 import csv
@@ -87,7 +87,7 @@ class UserInterface(QtWidgets.QMainWindow):
         hbox.addLayout(button_box)
 
         # buttons to functions
-        start_button.clicked.connect(self.start_scan)
+        start_button.clicked.connect(self.run)
         save_button.clicked.connect(self.save_data)
 
         self.experiment = SolarExperiment()
@@ -104,11 +104,11 @@ class UserInterface(QtWidgets.QMainWindow):
         self._createStatusBar()
 
     @Slot()
-    def start_scan(self):
+    def run(self):
         """Starts a scanning process with threading."""
         try:
-            self.experiment = SolarExperiment()
-            self.experiment.scan(
+
+            self.experiment.start_scan(
                 self.port.currentText(),
                 self.start_voltage.value(),
                 self.stop_voltage.value(),
@@ -133,7 +133,7 @@ class UserInterface(QtWidgets.QMainWindow):
         self.plot_widget.plot(x, y, symbol="o", symbolSize=5, pen=None)
         self.plot_widget.setLabel("left", "I (A)")
         self.plot_widget.setLabel("bottom", "U (V)")
-        error_bars = pg.ErrorBarItem(x=x, y=y, width=x_err, height=y_err)
+        error_bars = pg.ErrorBarItem(x=x, y=y, width=2*x_err, height=2*y_err)
         self.plot_widget.addItem(error_bars)
 
     @Slot()
